@@ -1,32 +1,30 @@
-from django.db import models
-from .validators import validate_positive
 import uuid
+from mongoengine import (
+    Document,
+    StringField,
+    DecimalField,
+    IntField,
+    UUIDField,
+    DateTimeField,
+)
+from mongoengine.signals import pre_save
+from datetime import datetime, timezone
 
 
-class Product(models.Model):
+class ProductDocument(Document):
+    product_id = UUIDField(primary_key=True, default=uuid.uuid4)
+    name = StringField(max_length=255, required=True)
+    description = StringField()
+    category = StringField(max_length=255)
+    price = DecimalField(max_digits=10, decimal_places=2, required=True)
+    brand = StringField(max_length=255)
+    quantity = IntField(required=True)
+    created_at = DateTimeField(default=datetime.now(timezone.utc))
+    updated_at = DateTimeField(default=datetime.now(timezone.utc))
 
-    product_id = models.UUIDField(
-        primary_key=True, editable=False, help_text="Unique identifier for the product", default=uuid.uuid4
-    )
-    name = models.CharField(
-        max_length=255, db_index=True, help_text="The name of the product"
-    )
-    description = models.TextField(
-        blank=True, help_text="A detailed description of the product"
-    )
-    category = models.CharField(
-        max_length=255, db_index=True, help_text="The category of the product"
-    )  # Could possibly be another model with a ForeignKey relationship
-    price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        help_text="The price of the product",
-        validators=[validate_positive],
-    )
-    brand = models.CharField(
-        max_length=255, db_index=True, help_text="The brand of the product"
-    )  # Could possibly be another model with a ForeignKey relationship
-    quantity = models.PositiveIntegerField(
-        help_text="The available quantity of the product",
-        validators=[validate_positive],
-    )
+    @classmethod
+    def pre_save(cls, sender, document, **kwargs):
+        document.updated_at = datetime.now(timezone.utc)
+
+
+pre_save.connect(ProductDocument.pre_save, sender=ProductDocument)

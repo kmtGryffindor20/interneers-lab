@@ -4,21 +4,25 @@ from rest_framework.generics import (
     DestroyAPIView,
     UpdateAPIView,
     RetrieveAPIView,
-    RetrieveUpdateAPIView,
 )
-from .models import Product
 from .serializers import ProductSerializer
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework import status
 
-IN_MEMORY_PRODUCTS = []  # This will hold our products in memory
+from .repository import ProductRepository
+from .service import ProductService
+
+repo = ProductRepository()
+service = ProductService(repo)
 
 
 class ProductListView(ListAPIView):
-    queryset = IN_MEMORY_PRODUCTS
     serializer_class = ProductSerializer
     pagination_class = PageNumberPagination
+
+    def get_queryset(self):
+        return service.list_products()
 
 
 class ProductCreateView(CreateAPIView):
@@ -26,79 +30,54 @@ class ProductCreateView(CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            product = Product(
-                **serializer.validated_data
-            )  # Create a Product instance without saving to DB
-            IN_MEMORY_PRODUCTS.append(
-                product
-            )  # Add the new product to the in-memory list
-            serializer = self.get_serializer(product)  # Serialize the new product
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        try:
+            product = service.create_product(**serializer.validated_data)
+            output_serializer = self.get_serializer(product)
+            return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductDeleteView(DestroyAPIView):
     serializer_class = ProductSerializer
+    lookup_field = "product_id"
 
-    def destroy(self, request, *args, **kwargs):
-        product_id = kwargs.get("pk")
-        product_to_delete = None
-        for p in IN_MEMORY_PRODUCTS:
-            if p.product_id == product_id:
-                product_to_delete = p
-                break
-        if product_to_delete:
-            IN_MEMORY_PRODUCTS.remove(
-                product_to_delete
-            )  # Remove the product from the in-memory list
+    def delete(self, request, *args, **kwargs):
+        product_id = self.kwargs.get(self.lookup_field)
+        success = service.delete_product(product_id)
+        if success:
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(
-            {"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND
+            {"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND
         )
 
 
 class ProductUpdateView(UpdateAPIView):
     serializer_class = ProductSerializer
-    queryset = IN_MEMORY_PRODUCTS
+    lookup_field = "product_id"
 
-    def update(self, request, *args, **kwargs):
-        print("Received update request with data:", request.data)
-        product_id = kwargs.get("pk")
-        product_to_update = None
-        for p in self.queryset:
-            if p.product_id == product_id:
-                product_to_update = p
-                break
-        if not product_to_update:
-            return Response(
-                {"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND
-            )
+    def get_queryset(self):
+        return service.list_products()
 
-        serializer = self.get_serializer(
-            product_to_update, data=request.data, partial=True
-        )
-        if serializer.is_valid():
-            for key, value in serializer.validated_data.items():
-                setattr(product_to_update, key, value)
-            serializer = self.get_serializer(product_to_update)
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get_object(self):
+        product_id = self.kwargs.get(self.lookup_field)
+        return service.get_product(product_id)
 
 
 class ProductDetailView(RetrieveAPIView):
     serializer_class = ProductSerializer
+    lookup_field = "product_id"
+
+    def get_queryset(self):
+        return service.list_products()
 
     def retrieve(self, request, *args, **kwargs):
-        product_id = kwargs.get("pk")
-        product = None
-        for p in IN_MEMORY_PRODUCTS:
-            if p.product_id == product_id:
-                product = p
-                break
+        product_id = self.kwargs.get(self.lookup_field)
+        product = service.get_product(product_id)
         if product:
             serializer = self.get_serializer(product)
             return Response(serializer.data)
         return Response(
-            {"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND
+            {"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND
         )

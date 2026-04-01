@@ -6,9 +6,6 @@
 ![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)
 ![Status](https://img.shields.io/badge/Project%20Status-In%20Progress-yellow)
 ![Tests](https://img.shields.io/badge/Tests-Passing-success)
-![Coverage](https://img.shields.io/badge/Coverage-WIP-orange)
-![PRs](https://img.shields.io/badge/PRs-Required-blueviolet)
-![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
 ---
 
@@ -78,22 +75,22 @@ The goal is to build a **small but production-style end-to-end Inventory Managem
 ## ✅ Week 3 – Service Layer & Database Integration
 
 ### Upskilling
-- [ ] Learn Controller–Service–Repository pattern
-- [ ] Understand ORMs and persistence
-- [ ] Learn MongoDB basics and MongoEngine
-- [ ] Understand MVC in Django
+- [x] Learn Controller–Service–Repository pattern
+- [x] Understand ORMs and persistence
+- [x] Learn MongoDB basics and MongoEngine
+- [x] Understand MVC in Django
 
 ### Implementation
-- [ ] Refactor controllers to be thin
-- [ ] Create `ProductService` for business logic
-- [ ] Create repository layer for DB access
-- [ ] Setup MongoDB (preferably using Docker)
-- [ ] Migrate Product model to MongoEngine
-- [ ] Persist data in MongoDB
-- [ ] Inspect collections using MongoDB Compass
+- [x] Refactor controllers to be thin
+- [x] Create `ProductService` for business logic
+- [x] Create repository layer for DB access
+- [x] Setup MongoDB (preferably using Docker)
+- [x] Migrate Product model to MongoEngine
+- [x] Persist data in MongoDB
+- [x] Inspect collections using MongoDB Compass
 
 ### Advanced (Optional)
-- [ ] Add `created_at` and `updated_at` audit fields
+- [x] Add `created_at` and `updated_at` audit fields
 - [ ] Use audit fields to improve API responses
 
 ---

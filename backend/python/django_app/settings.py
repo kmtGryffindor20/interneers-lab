@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
-from pymongo import MongoClient
+from mongoengine import connect
 
 load_dotenv()
 MONGO_USER = os.getenv("MONGO_USER", "root")
@@ -21,8 +21,9 @@ MONGO_PASS = os.getenv("MONGO_PASS", "example")
 MONGO_PORT = os.getenv("MONGO_PORT", "27019")
 MONGO_HOST = os.getenv("MONGO_HOST", "localhost")
 
-client = MongoClient(
-    f"mongodb://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}:{MONGO_PORT}/?authSource=admin"
+connect(
+    db="products_db",
+    host=f"mongodb://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}:{MONGO_PORT}/products_db?authSource=admin",
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
