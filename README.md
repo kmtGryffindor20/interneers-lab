@@ -98,25 +98,25 @@ The goal is to build a **small but production-style end-to-end Inventory Managem
 ## ✅ Week 4 – Relations, Validation & Advanced APIs
 
 ### Upskilling
-- [ ] Understand relational modeling in NoSQL
-- [ ] Learn filtering, sorting, pagination patterns
-- [ ] Learn advanced validation & error handling
+- [x] Understand relational modeling in NoSQL
+- [x] Learn filtering, sorting, pagination patterns
+- [x] Learn advanced validation & error handling
 
 ### Implementation
-- [ ] Create `ProductCategory` model (title, description)
-- [ ] Implement `ProductCategoryService`
-- [ ] Add CRUD APIs for product categories
-- [ ] Associate Products with Categories
-- [ ] Fetch products by category
-- [ ] Add/remove products from categories
-- [ ] Enforce **brand as mandatory**
-- [ ] Handle existing products without brand
-- [ ] Implement bulk product creation via CSV upload
+- [x] Create `ProductCategory` model (title, description)
+- [x] Implement `ProductCategoryService`
+- [x] Add CRUD APIs for product categories
+- [x] Associate Products with Categories
+- [x] Fetch products by category
+- [x] Add/remove products from categories
+- [x] Enforce **brand as mandatory**
+- [x] Handle existing products without brand
+- [x] Implement bulk product creation via CSV upload
 
 ### Advanced (Optional)
 - [ ] Write seed scripts for categories
 - [ ] Add rich filters (multiple categories, price ranges)
-- [ ] Write migration scripts for legacy products
+- [x] Write migration scripts for legacy products
 
 ---
 
